@@ -4,6 +4,7 @@ import com.ironvault.notifications.domain.enums.NotificationChannel;
 import com.ironvault.notifications.domain.enums.NotificationStatus;
 import com.ironvault.notifications.domain.model.NotificationEvent;
 import com.ironvault.notifications.domain.model.NotificationLog;
+import com.ironvault.notifications.domain.port.out.EmailSenderPort;
 import com.ironvault.notifications.domain.port.out.NotificationEventRepositoryPort;
 import com.ironvault.notifications.domain.port.out.NotificationLogRepositoryPort;
 import lombok.extern.slf4j.Slf4j;
@@ -19,13 +20,16 @@ public class EmailDispatcherService {
     private final TemplateNotificationService templateNotificationService;
     private final NotificationEventRepositoryPort eventRepositoryPort;
     private final NotificationLogRepositoryPort logRepositoryPort;
+    private final EmailSenderPort emailSenderPort;
 
     public EmailDispatcherService(TemplateNotificationService templateNotificationService,
                                   NotificationEventRepositoryPort eventRepositoryPort,
-                                  NotificationLogRepositoryPort logRepositoryPort) {
+                                  NotificationLogRepositoryPort logRepositoryPort,
+                                  EmailSenderPort emailSenderPort) {
         this.templateNotificationService = templateNotificationService;
         this.eventRepositoryPort = eventRepositoryPort;
         this.logRepositoryPort = logRepositoryPort;
+        this.emailSenderPort = emailSenderPort;
     }
 
     public void dispatch(NotificationEvent event) {
@@ -43,7 +47,8 @@ public class EmailDispatcherService {
 
         try {
             var emailMessage = templateNotificationService.build(event);
-            // EmailSenderPort será chamado aqui
+            emailSenderPort.send(emailMessage);
+
             notificationLog .setStatus(NotificationStatus.SENT);
             notificationLog .setSentAt(Instant.now());
 

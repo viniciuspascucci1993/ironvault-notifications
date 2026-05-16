@@ -1,0 +1,24 @@
+name: ironvault-notifications-stack
+
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_DB: ironvault_notifications
+      POSTGRES_USER: ironvault_notifications
+      POSTGRES_PASSWORD: ironvault_notifications
+    ports:
+      - "5492:5432"
+    volumes:
+      - postgres_notifications_data:/var/lib/postgresql/data
+    networks:
+      - ironvault-notifications-network
+
+volumes:
+  postgres_notifications_data:
+
+networks:
+  ironvault-notifications-network:

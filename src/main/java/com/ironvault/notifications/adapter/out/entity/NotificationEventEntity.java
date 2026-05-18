@@ -27,7 +27,7 @@ public class NotificationEventEntity {
     @CollectionTable(name = "notification_event_payload",
             joinColumns = @JoinColumn(name = "event_id"))
     @MapKeyColumn(name = "payload_key")
-    @Column(name = "payload_value")
+    @Column(name = "payload_value", length = 4096)
     private Map<String, String> payload;
 
     private Instant createdAt;

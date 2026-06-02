@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+import static com.ironvault.notifications.domain.enums.EmailTemplate.EMAIL_CONFIRMATION;
+
 @Service
 @Slf4j
 public class TemplateNotificationService {
@@ -21,6 +23,7 @@ public class TemplateNotificationService {
             case PAYMENT_APPROVED -> buildPaymentApproved(event.getPayload());
             case PAYMENT_FAILED -> buildPaymentFailed(event.getPayload());
             case PIX_GENERATED -> buildPixGenerated(event.getPayload());
+            case EMAIL_CONFIRMATION -> buildEmailConfirmation(event.getPayload());
             default -> throw new IllegalArgumentException(
                     "No template found for event type: " + event.getType()
             );
@@ -101,5 +104,19 @@ public class TemplateNotificationService {
             log.error("Failed to load email template path={} reason={}", path, ex.getMessage());
             throw new RuntimeException("Failed to load email template: " + path, ex);
         }
+    }
+
+    private EmailSenderMessage buildEmailConfirmation(Map<String, String> payload) {
+        String confirmationLink = payload.getOrDefault("confirmationLink", "");
+        String html = loadTemplate("templates/email/email-confirmation.html")
+                .replace("{{confirmationLink}}", confirmationLink);
+
+        return new EmailSenderMessage(
+                payload.get("email"),
+                "Confirme seu email - IronVault Payments",
+                EmailTemplate.EMAIL_CONFIRMATION,
+                Map.of("confirmationLink", confirmationLink),
+                html
+        );
     }
 }

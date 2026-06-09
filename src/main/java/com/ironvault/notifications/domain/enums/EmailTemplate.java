@@ -6,5 +6,7 @@ public enum EmailTemplate {
     PAYMENT_APPROVED,
     PAYMENT_FAILED,
     PIX_GENERATED,
+    PASSWORD_RESET,
     EMAIL_CONFIRMATION
+
 }

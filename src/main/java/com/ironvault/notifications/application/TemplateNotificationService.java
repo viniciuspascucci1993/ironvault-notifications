@@ -23,6 +23,7 @@ public class TemplateNotificationService {
             case PAYMENT_APPROVED -> buildPaymentApproved(event.getPayload());
             case PAYMENT_FAILED -> buildPaymentFailed(event.getPayload());
             case PIX_GENERATED -> buildPixGenerated(event.getPayload());
+            case PASSWORD_RESET -> buildPasswordReset(event.getPayload());
             case EMAIL_CONFIRMATION -> buildEmailConfirmation(event.getPayload());
             default -> throw new IllegalArgumentException(
                     "No template found for event type: " + event.getType()
@@ -92,6 +93,20 @@ public class TemplateNotificationService {
                 EmailTemplate.PIX_GENERATED,
                 Map.of("pixCopyPaste", payload.getOrDefault("pixCopyPaste", ""),
                         "amount", payload.getOrDefault("amount", "")),
+                html
+        );
+    }
+
+    private EmailSenderMessage buildPasswordReset(Map<String, String> payload) {
+        String resetLink = payload.getOrDefault("resetLink", "");
+        String html = loadTemplate("templates/email/password-reset.html")
+                .replace("{{resetLink}}", resetLink);
+
+        return new EmailSenderMessage(
+                payload.get("email"),
+                "Redefinição de senha - IronVault Payments",
+                EmailTemplate.PASSWORD_RESET,
+                Map.of("resetLink", resetLink),
                 html
         );
     }

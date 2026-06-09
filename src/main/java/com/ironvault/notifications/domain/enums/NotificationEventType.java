@@ -6,6 +6,7 @@ public enum NotificationEventType {
     PAYMENT_APPROVED,
     PAYMENT_FAILED,
     PIX_GENERATED,
+    PASSWORD_RESET,
     REFUND_PROCESSED,
     EMAIL_CONFIRMATION
 }

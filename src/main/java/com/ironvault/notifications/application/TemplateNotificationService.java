@@ -25,10 +25,37 @@ public class TemplateNotificationService {
             case PIX_GENERATED -> buildPixGenerated(event.getPayload());
             case PASSWORD_RESET -> buildPasswordReset(event.getPayload());
             case EMAIL_CONFIRMATION -> buildEmailConfirmation(event.getPayload());
+            case MERCHANT_APPROVED -> buildMerchantApproved(event.getPayload());
+            case MERCHANT_REJECTED -> buildMerchantRejected(event.getPayload());
             default -> throw new IllegalArgumentException(
                     "No template found for event type: " + event.getType()
             );
         };
+    }
+
+    private EmailSenderMessage buildMerchantApproved(Map<String, String> payload) {
+        String html = loadTemplate("templates/email/merchant-approved.html");
+
+        return new EmailSenderMessage(
+                payload.get("email"),
+                "Sua conta foi aprovada - IronVault Payments",
+                EmailTemplate.MERCHANT_APPROVED,
+                Map.of("email", payload.getOrDefault("email", "")),
+                html
+        );
+    }
+
+    private EmailSenderMessage buildMerchantRejected(Map<String, String> payload) {
+        String html = loadTemplate("templates/email/merchant-rejected.html");
+
+        return new EmailSenderMessage(
+                payload.get("email"),
+                "Atualização sobre sua conta - IronVault Payments",
+                EmailTemplate.MERCHANT_REJECTED,
+                Map.of("email", payload.getOrDefault("email", "")),
+                html
+        );
+
     }
 
     private EmailSenderMessage buildPaymentApproved(Map<String, String> payload) {
